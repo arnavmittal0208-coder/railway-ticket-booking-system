@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: curail-backend
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: RAPIDAPI_KEY
+        sync: false
+      - key: RAPIDAPI_HOST
+        value: irctc1.p.rapidapi.com
+      - key: RAPIDAPI_SEARCH_PATH
+        value: /api/v3/trainBetweenStations
+      - key: TRAIN_API_BASE_URL
+        value: https://api.irail.be
+      - key: QUEUE_PROCESS_INTERVAL_MS
+        value: 3000
+      - key: DEFAULT_ADMIN_EMAIL
+        value: admin@railway.com
+      - key: DEFAULT_ADMIN_PASSWORD
+        sync: false
