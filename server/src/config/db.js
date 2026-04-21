@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const connectDB = async () => {
   const mongoUri = String(process.env.MONGODB_URI || "").trim();
   const configuredDbName = String(process.env.MONGODB_DB_NAME || "").trim();
+  const fallbackDbName = "railwayreservation";
 
   if (!mongoUri) {
     throw new Error("MONGODB_URI is empty. Add your Atlas connection string in Render environment variables.");
@@ -10,19 +11,17 @@ const connectDB = async () => {
 
   const explicitDbMatch = mongoUri.match(/^mongodb(?:\+srv)?:\/\/[^/]+\/([^?]+)/i);
   const explicitDbName = explicitDbMatch?.[1] ? decodeURIComponent(explicitDbMatch[1]) : "";
-  const resolvedDbName = configuredDbName || explicitDbName;
-
-  if (!resolvedDbName) {
-    throw new Error(
-      "MongoDB database is not specified. Add a database in MONGODB_URI (e.g. /railwayreservation) or set MONGODB_DB_NAME."
-    );
-  }
+  const resolvedDbName = configuredDbName || explicitDbName || fallbackDbName;
 
   try {
     if (configuredDbName && explicitDbName && configuredDbName !== explicitDbName) {
       console.warn(
         `MongoDB database mismatch detected. Using MONGODB_DB_NAME=${configuredDbName} instead of URI database ${explicitDbName}.`
       );
+    }
+
+    if (!configuredDbName && !explicitDbName) {
+      console.warn(`MongoDB database not specified. Falling back to default database: ${fallbackDbName}.`);
     }
 
     const conn = await mongoose.connect(mongoUri, {
