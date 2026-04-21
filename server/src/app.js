@@ -38,6 +38,18 @@ app.get("/health", (req, res) => {
   res.json({ ok: true, timestamp: new Date().toISOString() });
 });
 
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, timestamp: new Date().toISOString() });
+});
+
+app.get("/api", (req, res) => {
+  res.json({
+    ok: true,
+    message: "Railway API is running",
+    routes: ["/api/auth", "/api/trains", "/api/bookings", "/api/admin"],
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/trains", trainRoutes);
 app.use("/api/bookings", bookingRoutes);
