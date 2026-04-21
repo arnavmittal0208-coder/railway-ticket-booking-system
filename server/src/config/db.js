@@ -10,7 +10,7 @@ const connectDB = async () => {
 
   const explicitDbMatch = mongoUri.match(/^mongodb(?:\+srv)?:\/\/[^/]+\/([^?]+)/i);
   const explicitDbName = explicitDbMatch?.[1] ? decodeURIComponent(explicitDbMatch[1]) : "";
-  const resolvedDbName = explicitDbName || configuredDbName;
+  const resolvedDbName = configuredDbName || explicitDbName;
 
   if (!resolvedDbName) {
     throw new Error(
@@ -19,6 +19,12 @@ const connectDB = async () => {
   }
 
   try {
+    if (configuredDbName && explicitDbName && configuredDbName !== explicitDbName) {
+      console.warn(
+        `MongoDB database mismatch detected. Using MONGODB_DB_NAME=${configuredDbName} instead of URI database ${explicitDbName}.`
+      );
+    }
+
     const conn = await mongoose.connect(mongoUri, {
       dbName: resolvedDbName,
       serverSelectionTimeoutMS: 10000,
